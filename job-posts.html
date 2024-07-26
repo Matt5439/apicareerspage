@@ -40,6 +40,34 @@
             margin-top: 20px;
             line-height: 1.6;
         }
+        form {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin: 10px 0 5px;
+        }
+        input, textarea, select {
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+        button {
+            padding: 10px;
+            background-color: #030303;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #555;
+        }
     </style>
 </head>
 <body>
@@ -51,6 +79,11 @@
             <h2 id="jobTitle"></h2>
             <div class="job-content" id="jobContent"></div>
         </div>
+        <form id="applicationForm">
+            <h3>Apply for this Job</h3>
+            <div id="formFields"></div>
+            <button type="submit">Submit Application</button>
+        </form>
     </main>
     <script>
         const boardToken = 'secondeexternaldemomatt'; // Replace with your actual board token
@@ -75,6 +108,7 @@
                 }
                 const data = await response.json();
                 displayJobPost(data);
+                populateApplicationForm(data.questions); // Populate the form with questions
             } catch (error) {
                 console.error('Error fetching job data:', error);
                 document.getElementById('jobContent').innerText = 'Failed to load job details.';
@@ -88,6 +122,78 @@
             jobTitle.innerText = job.title; // Set the job title
             jobContent.innerHTML = job.content; // Set the job content (HTML is safe here)
         }
+
+        function populateApplicationForm(questions) {
+            const formFields = document.getElementById('formFields');
+            questions.forEach(question => {
+                const fieldContainer = document.createElement('div');
+                fieldContainer.classList.add('field-container');
+
+                const label = document.createElement('label');
+                label.innerText = question.label;
+
+                let inputField;
+
+                // Create input fields based on field types
+                question.fields.forEach(field => {
+                    switch (field.type) {
+                        case 'input_text':
+                            inputField = document.createElement('input');
+                            inputField.type = 'text';
+                            inputField.name = field.name;
+                            inputField.required = question.required;
+                            break;
+
+                        case 'textarea':
+                            inputField = document.createElement('textarea');
+                            inputField.name = field.name;
+                            inputField.required = question.required;
+                            break;
+
+                        case 'input_file':
+                            inputField = document.createElement('input');
+                            inputField.type = 'file';
+                            inputField.name = field.name;
+                            inputField.required = question.required;
+                            break;
+
+                        case 'multi_value_single_select':
+                            inputField = document.createElement('select');
+                            inputField.name = field.name;
+                            inputField.required = question.required;
+                            field.values.forEach(option => {
+                                const selectOption = document.createElement('option');
+                                selectOption.value = option.value;
+                                selectOption.innerText = option.label;
+                                inputField.appendChild(selectOption);
+                            });
+                            break;
+
+                        default:
+                            console.warn(`Unsupported field type: ${field.type}`);
+                            break;
+                    }
+                    if (inputField) {
+                        fieldContainer.appendChild(label);
+                        fieldContainer.appendChild(inputField);
+                    }
+                });
+
+                formFields.appendChild(fieldContainer);
+            });
+        }
+
+        document.getElementById('applicationForm').addEventListener('submit', (event) => {
+            event.preventDefault(); // Prevent the default form submission
+
+            const formData = new FormData(event.target);
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value; // Collect form data
+            });
+            console.log('Submitted application data:', data);
+            alert('Application submitted! Check the console for submitted data.');
+        });
 
         // Fetch job post on page load
         window.onload = fetchJobPost;
