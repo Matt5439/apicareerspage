@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Post</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f7;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        header {
+            background-color: #000;
+            color: #fff;
+            width: 100%;
+            text-align: center;
+            padding: 1.5em 0;
+        }
+        main {
+            width: 80%;
+            max-width: 800px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            padding: 20px;
+            margin-top: 20px;
+        }
+        h1 {
+            font-size: 2em;
+            margin: 0;
+        }
+        .job-content {
+            margin-top: 20px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Job Post</h1>
+    </header>
+    <main>
+        <div id="jobContainer">
+            <h2 id="jobTitle"></h2>
+            <div class="job-content" id="jobContent"></div>
+        </div>
+    </main>
+    <script>
+        const boardToken = 'secondeexternaldemomatt'; // Replace with your actual board token
+
+        function getJobId() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('gh_jid');
+        }
+
+        async function fetchJobPost() {
+            const jobId = getJobId();
+            if (!jobId) {
+                document.getElementById('jobContent').innerText = 'Job ID not found.';
+                return;
+            }
+            const apiUrl = `https://boards-api.greenhouse.io/v1/boards/${boardToken}/jobs/${jobId}?questions=true`;
+
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                displayJobPost(data);
+            } catch (error) {
+                console.error('Error fetching job data:', error);
+                document.getElementById('jobContent').innerText = 'Failed to load job details.';
+            }
+        }
+
+        function displayJobPost(job) {
+            const jobTitle = document.getElementById('jobTitle');
+            const jobContent = document.getElementById('jobContent');
+
+            jobTitle.innerText = job.title; // Set the job title
+            jobContent.innerHTML = job.content; // Set the job content (HTML is safe here)
+        }
+
+        // Fetch job post on page load
+        window.onload = fetchJobPost;
+    </script>
+</body>
+</html>
