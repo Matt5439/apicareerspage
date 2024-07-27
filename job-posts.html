@@ -41,7 +41,16 @@
             const jobDescription = document.getElementById('job-description');
 
             jobTitle.textContent = job.title;
-            jobDescription.innerHTML = job.content; // Use innerHTML to render the HTML content properly
+
+            // Use innerHTML to render the HTML content properly
+            jobDescription.innerHTML = decodeHTMLEntities(job.content);
+        }
+
+        // Helper function to decode HTML entities
+        function decodeHTMLEntities(text) {
+            const textarea = document.createElement('textarea');
+            textarea.innerHTML = text;
+            return textarea.value;
         }
 
         // Fetch job details on page load
