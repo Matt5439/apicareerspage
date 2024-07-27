@@ -42,7 +42,16 @@
             const jobDescription = document.getElementById('job-description');
 
             jobTitle.textContent = job.title;
-            jobDescription.innerHTML = job.content; // Use innerHTML to render the HTML content properly
+
+            // Create a temporary element to parse HTML content
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = job.content;
+
+            // Append parsed content to the jobDescription div
+            while (tempDiv.firstChild) {
+                jobDescription.appendChild(tempDiv.firstChild);
+            }
+
             console.log('Job Content:', job.content); // Debugging step to check content
         }
 
@@ -51,4 +60,3 @@
     </script>
 </body>
 </html>
-
