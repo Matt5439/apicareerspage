@@ -30,7 +30,6 @@
             try {
                 const response = await fetch(apiUrl);
                 const data = await response.json();
-                console.log('Fetched Job Details:', data); // Debugging step
                 displayJobDetails(data);
             } catch (error) {
                 console.error('Error fetching job details:', error);
@@ -42,17 +41,7 @@
             const jobDescription = document.getElementById('job-description');
 
             jobTitle.textContent = job.title;
-
-            // Create a temporary element to parse HTML content
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = job.content;
-
-            // Append parsed content to the jobDescription div
-            while (tempDiv.firstChild) {
-                jobDescription.appendChild(tempDiv.firstChild);
-            }
-
-            console.log('Job Content:', job.content); // Debugging step to check content
+            jobDescription.innerHTML = job.content; // Use innerHTML to render the HTML content properly
         }
 
         // Fetch job details on page load
