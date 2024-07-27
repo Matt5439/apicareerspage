@@ -30,6 +30,7 @@
             try {
                 const response = await fetch(apiUrl);
                 const data = await response.json();
+                console.log('Fetched Job Details:', data); // Debugging step
                 displayJobDetails(data);
             } catch (error) {
                 console.error('Error fetching job details:', error);
@@ -42,6 +43,7 @@
 
             jobTitle.textContent = job.title;
             jobDescription.innerHTML = job.content; // Use innerHTML to render the HTML content properly
+            console.log('Job Content:', job.content); // Debugging step to check content
         }
 
         // Fetch job details on page load
@@ -49,3 +51,4 @@
     </script>
 </body>
 </html>
+
