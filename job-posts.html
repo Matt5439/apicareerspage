@@ -6,7 +6,8 @@
     <title>Job Application</title>
 </head>
 <body>
-    <h1>Apply for the Job</h1>
+    <h1 id="job-title">Apply for the Job</h1>
+    <div id="job-description"></div>
     <form id="job-application-form">
         <label for="first_name">First Name:</label>
         <input type="text" id="first_name" name="first_name" required><br>
@@ -19,5 +20,32 @@
 
         <button type="submit">Submit</button>
     </form>
+
+    <script>
+        const boardToken = 'secondeexternaldemomatt'; // Replace with your actual board token
+        const jobId = new URLSearchParams(window.location.search).get('gh_jid');
+        const apiUrl = `https://boards-api.greenhouse.io/v1/boards/${boardToken}/jobs/${jobId}`;
+
+        async function fetchJobDetails() {
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                displayJobDetails(data);
+            } catch (error) {
+                console.error('Error fetching job details:', error);
+            }
+        }
+
+        function displayJobDetails(job) {
+            const jobTitle = document.getElementById('job-title');
+            const jobDescription = document.getElementById('job-description');
+
+            jobTitle.textContent = job.title;
+            jobDescription.innerHTML = job.content;
+        }
+
+        // Fetch job details on page load
+        window.onload = fetchJobDetails;
+    </script>
 </body>
 </html>
